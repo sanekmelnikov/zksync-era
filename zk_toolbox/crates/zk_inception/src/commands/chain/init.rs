@@ -6,14 +6,10 @@ use common::{
     spinner::Spinner,
 };
 use config::{
-    copy_configs,
-    forge_interface::{
+    copy_configs, forge_interface::{
         register_chain::{input::RegisterChainL1Config, output::RegisterChainOutput},
         script_params::REGISTER_CHAIN_SCRIPT_PARAMS,
-    },
-    set_l1_rpc_url,
-    traits::{ReadConfig, SaveConfig, SaveConfigWithBasePath},
-    update_from_chain_config, ChainConfig, ContractsConfig, EcosystemConfig,
+    }, set_l1_rpc_url, traits::{ReadConfig, SaveConfig, SaveConfigWithBasePath}, update_from_chain_config, AppsChainConfig, AppsEcosystemConfig, ChainConfig, ContractsConfig, EcosystemConfig, PortalAppChainConfig
 };
 use types::{BaseToken, L1Network, WalletCreation};
 use xshell::Shell;
@@ -26,16 +22,11 @@ use crate::{
             deploy_l2_contracts, deploy_paymaster,
             genesis::genesis,
             set_token_multiplier_setter::set_token_multiplier_setter,
-        },
-        portal::create_and_save_portal_config,
+        }, explorer::{create_and_save_explorer_config, build_explorer_app_config, initialize_explorer_database}, portal::{build_portal_app_config, create_and_save_portal_config, create_and_save_portal_chain_config}
     },
     consts::AMOUNT_FOR_DISTRIBUTION_TO_WALLETS,
     messages::{
-        msg_initializing_chain, MSG_ACCEPTING_ADMIN_SPINNER, MSG_CHAIN_INITIALIZED,
-        MSG_CHAIN_NOT_FOUND_ERR, MSG_DISTRIBUTING_ETH_SPINNER, MSG_GENESIS_DATABASE_ERR,
-        MSG_MINT_BASE_TOKEN_SPINNER, MSG_PORTAL_FAILED_TO_CREATE_CONFIG_ERR,
-        MSG_REGISTERING_CHAIN_SPINNER, MSG_SELECTED_CONFIG,
-        MSG_UPDATING_TOKEN_MULTIPLIER_SETTER_SPINNER,
+        msg_initializing_chain, MSG_ACCEPTING_ADMIN_SPINNER, MSG_APPS_FAILED_TO_CREATE_CONFIG_ERR, MSG_CHAIN_INITIALIZED, MSG_CHAIN_NOT_FOUND_ERR, MSG_DISTRIBUTING_ETH_SPINNER, MSG_EXPLORER_DATABASE_ERR, MSG_EXPLORER_FAILED_TO_CREATE_CONFIG_ERR, MSG_GENESIS_DATABASE_ERR, MSG_MINT_BASE_TOKEN_SPINNER, MSG_PORTAL_FAILED_TO_CREATE_CONFIG_ERR, MSG_REGISTERING_CHAIN_SPINNER, MSG_SELECTED_CONFIG, MSG_UPDATING_TOKEN_MULTIPLIER_SETTER_SPINNER
     },
     utils::forge::{check_the_balance, fill_forge_private_key},
 };
@@ -148,11 +139,39 @@ pub async fn init(
     genesis(init_args.genesis_args.clone(), shell, chain_config)
         .await
         .context(MSG_GENESIS_DATABASE_ERR)?;
+    
+    // create_apps_chain_config(ecosystem_config, chain_config, shell)
+    //     .await
+    //     .context(MSG_APPS_FAILED_TO_CREATE_CONFIG_ERR)?;
 
-    create_and_save_portal_config(ecosystem_config, shell)
+    create_and_save_portal_chain_config(chain_config, shell)
         .await
         .context(MSG_PORTAL_FAILED_TO_CREATE_CONFIG_ERR)?;
+    
+    // create_and_save_portal_config(ecosystem_config, shell)
+    //     .await
+    //     .context(MSG_PORTAL_FAILED_TO_CREATE_CONFIG_ERR)?;
 
+    // create_and_save_explorer_config(ecosystem_config, shell)
+    //     .await
+    //     .context(MSG_EXPLORER_FAILED_TO_CREATE_CONFIG_ERR)?;
+
+    Ok(())
+}
+
+async fn create_apps_chain_config(
+    ecosystem_config: &EcosystemConfig,
+    chain_config: &ChainConfig,
+    shell: &Shell,
+) -> anyhow::Result<()> {
+    let config_path = AppsChainConfig::get_config_path(&shell.current_dir(), &chain_config.name);
+    let portal_app_config = build_portal_app_config(ecosystem_config, chain_config, shell).await?;
+    let explorer_app_config = build_explorer_app_config(ecosystem_config, chain_config, shell).await?;
+    let apps_chain_config = AppsChainConfig {
+        portal: portal_app_config,
+        explorer: explorer_app_config,
+    };
+    apps_chain_config.save(shell, config_path)?;
     Ok(())
 }
 

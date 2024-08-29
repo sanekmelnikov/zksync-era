@@ -63,6 +63,20 @@ pub async fn init_db(db: &DatabaseConfig) -> anyhow::Result<()> {
     Ok(())
 }
 
+pub async fn check_if_db_exists(db: &DatabaseConfig) -> anyhow::Result<bool> {
+    // Connect to the database
+    let mut connection = PgConnection::connect(db.url.as_str()).await?;
+
+    // Query to check if the database exists
+    let query: &str = "SELECT 1 FROM pg_database WHERE datname = $1";
+    let exists: Option<(i32,)> = sqlx::query_as(query)
+        .bind(&db.name)
+        .fetch_optional(&mut connection)
+        .await?;
+
+    Ok(exists.is_some())
+}
+
 pub async fn drop_db_if_exists(db: &DatabaseConfig) -> anyhow::Result<()> {
     // Connect to the database.
     let mut connection = PgConnection::connect(db.url.as_str()).await?;

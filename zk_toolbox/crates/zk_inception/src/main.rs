@@ -13,7 +13,7 @@ use config::EcosystemConfig;
 use xshell::Shell;
 
 use crate::commands::{
-    args::{PortalArgs, RunServerArgs},
+    args::{ExplorerArgs, PortalArgs, RunServerArgs},
     chain::ChainCommands,
     ecosystem::EcosystemCommands,
     external_node::ExternalNodeCommands,
@@ -61,6 +61,8 @@ pub enum InceptionSubcommands {
     ContractVerifier(ContractVerifierCommands),
     /// Run dapp-portal
     Portal(PortalArgs),
+    /// Run block-explorer
+    Explorer(ExplorerArgs),
     /// Update ZKsync
     #[command(alias = "u")]
     Update(UpdateArgs),
@@ -122,7 +124,8 @@ async fn run_subcommand(inception_args: Inception, shell: &Shell) -> anyhow::Res
         }
         InceptionSubcommands::ContractVerifier(args) => {
             commands::contract_verifier::run(shell, args).await?
-        }
+        },
+        InceptionSubcommands::Explorer(args) => commands::explorer::run(shell, args).await?,
         InceptionSubcommands::Portal(args) => commands::portal::run(shell, args).await?,
         InceptionSubcommands::Update(args) => commands::update::run(shell, args)?,
         InceptionSubcommands::Markdown => {

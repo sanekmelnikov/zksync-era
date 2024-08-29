@@ -47,6 +47,7 @@ pub(super) fn msg_path_to_zksync_does_not_exist_err(path: &str) -> String {
 
 /// Ecosystem and chain init related messages
 pub(super) const MSG_L1_RPC_URL_HELP: &str = "L1 RPC URL";
+pub(super) const MSG_APPS_ARGS_HELP: &str = "Apps options (block-explorer and portal)";
 pub(super) const MSG_GENESIS_ARGS_HELP: &str = "Genesis options";
 pub(super) const MSG_DEV_ARG_HELP: &str =
     "Deploy ecosystem  using all defaults. Suitable for local development";
@@ -62,6 +63,7 @@ For using this config, you need to have governance wallet";
 pub(super) const MSG_L1_RPC_URL_INVALID_ERR: &str = "Invalid RPC URL";
 pub(super) const MSG_ECOSYSTEM_CONTRACTS_PATH_INVALID_ERR: &str = "Invalid path";
 pub(super) const MSG_GENESIS_DATABASE_ERR: &str = "Unable to perform genesis on the database";
+pub(super) const MSG_EXPLORER_DATABASE_ERR: &str = "Unable to create block explorer database";
 pub(super) const MSG_CHAIN_NOT_FOUND_ERR: &str = "Chain not found";
 pub(super) const MSG_INITIALIZING_ECOSYSTEM: &str = "Initializing ecosystem";
 pub(super) const MSG_DEPLOYING_ERC20: &str = "Deploying ERC20 contracts";
@@ -157,6 +159,8 @@ pub(super) const MSG_SERVER_DB_URL_HELP: &str = "Server database url without dat
 pub(super) const MSG_SERVER_DB_NAME_HELP: &str = "Server database name";
 pub(super) const MSG_PROVER_DB_URL_HELP: &str = "Prover database url without database name";
 pub(super) const MSG_PROVER_DB_NAME_HELP: &str = "Prover database name";
+pub(super) const MSG_EXPLORER_DB_URL_HELP: &str = "Explorer database url without database name";
+pub(super) const MSG_EXPLORER_DB_NAME_HELP: &str = "Explorer database name";
 pub(super) const MSG_USE_DEFAULT_DATABASES_HELP: &str = "Use default database urls and names";
 pub(super) const MSG_GENESIS_COMPLETED: &str = "Genesis completed successfully";
 pub(super) const MSG_STARTING_GENESIS: &str = "Starting genesis process";
@@ -194,6 +198,14 @@ pub(super) fn msg_server_db_name_prompt(chain_name: &str) -> String {
     format!("Please provide server database name for chain {chain_name}")
 }
 
+pub(super) fn msg_explorer_db_url_prompt(chain_name: &str) -> String {
+    format!("Please provide explorer database url for chain {chain_name}")
+}
+
+pub(super) fn msg_explorer_db_name_prompt(chain_name: &str) -> String {
+    format!("Please provide explorer database name for chain {chain_name}")
+}
+
 /// Chain initialize bridges related messages
 pub(super) const MSG_DEPLOYING_L2_CONTRACT_SPINNER: &str = "Deploying l2 contracts";
 
@@ -225,13 +237,23 @@ pub(super) const MSG_STARTING_SERVER: &str = "Starting server";
 pub(super) const MSG_FAILED_TO_RUN_SERVER_ERR: &str = "Failed to start server";
 pub(super) const MSG_PREPARING_EN_CONFIGS: &str = "Preparing External Node config";
 
+/// Apps related messages
+pub(super) const MSG_APPS_FAILED_TO_CREATE_CONFIG_ERR: &str = "Failed to create apps config";
+
 /// Portal related messages
-pub(super) const MSG_PORTAL_CONFIG_IS_EMPTY_ERR: &str = "Hyperchains config is empty";
+pub(super) const MSG_PORTAL_FAILED_TO_CREATE_ANY_CHAIN_CONFIG_ERR: &str = "Failed to create any valid hyperchain config";
 pub(super) const MSG_PORTAL_FAILED_TO_CREATE_CONFIG_ERR: &str = "Failed to create portal config";
 pub(super) const MSG_PORTAL_FAILED_TO_RUN_DOCKER_ERR: &str =
     "Failed to run portal docker container";
 pub(super) fn msg_portal_starting_on(host: &str, port: u16) -> String {
     format!("Starting portal on http://{host}:{port}")
+}
+
+/// Explorer related messages
+pub(super) const MSG_EXPLORER_FAILED_TO_CREATE_CONFIG_ERR: &str = "Failed to create block explorer config";
+pub(super) const MSG_EXPLORER_FAILED_TO_DROP_DATABASE_ERR: &str = "Failed to drop explorer database";
+pub(super) fn msg_explorer_initializing_database_for(chain: &str) -> String {
+    format!("Initializing explorer database for {chain} chain")
 }
 
 /// Forge utils related messages

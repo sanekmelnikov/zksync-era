@@ -35,6 +35,7 @@ impl GenesisArgs {
         let DBNames {
             server_name,
             prover_name,
+            ..
         } = generate_db_names(config);
         let chain_name = config.name.clone();
         if self.use_default {

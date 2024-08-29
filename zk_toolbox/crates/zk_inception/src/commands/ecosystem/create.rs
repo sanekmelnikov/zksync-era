@@ -15,7 +15,11 @@ use crate::{
         containers::{initialize_docker, start_containers},
         ecosystem::{
             args::create::EcosystemCreateArgs,
-            create_configs::{create_erc20_deployment_config, create_initial_deployments_config},
+            create_configs::{
+                create_apps_config,
+                create_erc20_deployment_config,
+                create_initial_deployments_config,
+            },
         },
     },
     messages::{
@@ -72,9 +76,10 @@ fn create(args: EcosystemCreateArgs, shell: &Shell) -> anyhow::Result<()> {
     let chain_config = args.chain_config();
     let chains_path = shell.create_dir("chains")?;
     let default_chain_name = args.chain_args.chain_name.clone();
-
+    
     create_initial_deployments_config(shell, &configs_path)?;
     create_erc20_deployment_config(shell, &configs_path)?;
+    create_apps_config(shell, &configs_path)?;
 
     let ecosystem_config = EcosystemConfig {
         name: ecosystem_name.clone(),
